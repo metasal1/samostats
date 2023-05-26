@@ -1,6 +1,6 @@
-# y00tsstats
+# SAMO Stats
 
 ## Description
 
-Contribute or contact us y00tsstats@gmail.com
+Contribute or contact us samostats@gmail.com
 
