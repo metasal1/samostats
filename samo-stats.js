@@ -2,6 +2,8 @@ import api from 'api';
 import dotenv from 'dotenv';
 import discorder from './discorder.js';
 import schedule from 'node-schedule';
+import tweeter from './tweeter.js';
+import samoPrice from './samoprice.js';
 
 const cron = process.argv[2] || process.env.CRON_SAMO_STATS;
 dotenv.config();
@@ -17,16 +19,13 @@ const tweetSchedule = schedule.scheduleJob(import.meta.url, cron, async function
     const req = await me.getCollectionsSymbolStats({ symbol: 'samo_nft' })
     console.log(req.data);
 
-    //{
-    //   symbol: 'lily',
-    //   floorPrice: 8570000000,
-    //   listedCount: 537,
-    //   avgPrice24hr: 8178149308.839158,
-    //   volumeAll: 875138574051391.5
-    // }
+    const samo = await samoPrice();
 
-    discorder(process.env.DISCORD_SAMO_WEBHOOK, { title: 'Samo Stats', description: `Current Floor Price: ${(req.data.floorPrice / LAMPORTS_PER_SOL).toFixed(2)} SOL 💃\nHow many listed: ${req.data.listedCount} 🙉\nAverage Price (24hr): ${(req.data.avgPrice24hr / LAMPORTS_PER_SOL).toFixed(2)} SOL 🥑\nVolume (24hr): ${(req.data.volumeAll / LAMPORTS_PER_SOL).toFixed(2)} SOL 🏛️` });
-
+    const floorPrice = (req.data.floorPrice / LAMPORTS_PER_SOL).toFixed(2);
+    const listedCount = req.data.listedCount;
+    discorder(process.env.DISCORD_SAMO_WEBHOOK, { title: 'Samo Stats', description: `Current Floor Price: ${floorPrice} SOL 💃\nHow many listed: ${listedCount} 🙉\nAverage Price (24hr): ${(req.data.avgPrice24hr / LAMPORTS_PER_SOL).toFixed(2)} SOL 🥑\nVolume (24hr): ${(req.data.volumeAll / LAMPORTS_PER_SOL).toFixed(2)} SOL 🏛️` });
+    const tweet = `Floor:${floorPrice} SOL\nListed: ${listedCount}\nCoin: ${samo.toFixed(4)}\n`;
+    tweeter(tweet)
 });
 
 const nextJob = schedule.scheduledJobs[Object.keys(schedule.scheduledJobs)[0]];

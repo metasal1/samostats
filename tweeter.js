@@ -3,7 +3,6 @@ import OAuth from 'oauth-1.0a';
 import dotenv from 'dotenv';
 import fetch from 'node-fetch';
 
-
 dotenv.config();
 
 const access_token = process.env.TWITTER_ACCESS_TOKEN;
@@ -52,6 +51,7 @@ export default async function tweeter(tweet) {
         // Make the request
         const response = await getRequest(userToken, tweet);
         console.log(response);
+        return response;
     } catch (e) {
         console.dir(e);
     }
